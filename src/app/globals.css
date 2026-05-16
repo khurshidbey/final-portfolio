@@ -1,0 +1,16 @@
+/* Tailwind 4-versiyasi uchun yagona kerakli kod */
+@import "tailwindcss";
+
+body {
+  background-color: #050505;
+  color: white;
+  margin: 0;
+  padding: 0;
+}
+
+/* Sarlavha uchun gradient effekti */
+.gradient-text {
+  background: linear-gradient(to right, #3b82f6, #a855f7, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
