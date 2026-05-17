@@ -191,6 +191,8 @@ export default function AdminDashboard() {
                     <option value="Avtomatlashtirish">Avtomatlashtirish</option>
                     <option value="Web Dasturlash">Web Dasturlash</option>
                     <option value="Boshqa">Boshqa</option>
+                    <option value="SMD posterlar">SMD posterlar</option>
+                    <option value="Poligrafiya">Poligrafiya</option>
                   </select>
 
                   <textarea placeholder="Loyiha haqida batafsil..." required rows="4" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-black/50 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500 resize-none text-white"></textarea>

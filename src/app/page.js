@@ -17,7 +17,9 @@ export default function Home() {
     "Grafik dizayn", 
     "AI Vizuallar", 
     "Avtomatlashtirish", 
-    "Web Dasturlash"
+    "Web Dasturlash",
+    "SMD posterlar",
+    "Poligrafiya"
   ];
 
   useEffect(() => {
