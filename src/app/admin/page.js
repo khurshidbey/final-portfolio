@@ -69,19 +69,20 @@ export default function AdminDashboard() {
     fetchData();
   }, [refresh, authLoading]);
 
-  // LOYIHA SAQLASH
+  // CTRL+V PASTE UCHUN HODISA
   const handlePaste = (e) => {
     const items = e.clipboardData?.items;
     if (!items) return;
     for (let i = 0; i < items.length; i++) {
       if (items[i].type.indexOf("image") !== -1) {
         const file = items[i].getAsFile();
-        // DIQQAT: Pastdagi setFile o'rniga o'zingizning rasmni saqlaydigan stateni yozing (masalan, setImage yoki setProjectImage)
-        setFile(file); 
+        setImage(file); 
         alert("Rasm nusxalandi! (Paste ishladi)");
       }
     }
   };
+
+  // LOYIHA SAQLASH
   const handleProjectSubmit = async (e) => {
     e.preventDefault();
     if (!image) return alert("Iltimos, asosiy rasm yuklang!");
@@ -195,14 +196,6 @@ export default function AdminDashboard() {
                 <form 
                   onSubmit={handleProjectSubmit}
                   onPaste={handlePaste}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={(e) => {
-                    e.preventDefault();
-                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                      // Bu yerga ham tepadagi stateni yozasiz (masalan, setFile)
-                      setFile(e.dataTransfer.files[0]);
-                    }
-                  }}
                   className="flex flex-col gap-4"
                 >
                   <input type="text" placeholder="Loyiha nomi" required value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-black/50 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500 text-white" />
@@ -221,9 +214,40 @@ export default function AdminDashboard() {
 
                   <textarea placeholder="Loyiha haqida batafsil..." required rows="4" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-black/50 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500 resize-none text-white"></textarea>
                   <input type="text" placeholder="Loyiha havolasi (Link)" value={link} onChange={(e) => setLink(e.target.value)} className="w-full bg-black/50 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500 text-white" />
-                  <div className="border-2 border-dashed border-white/20 p-4 rounded-xl text-center bg-black/30"><p className="text-xs text-gray-400 mb-2">Asosiy Rasm (Majburiy)</p><input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} className="text-xs text-gray-500 cursor-pointer" /></div>
-                  <div className="border border-white/10 p-3 rounded-xl bg-black/30"><p className="text-xs text-gray-400 mb-2">Galereya (Ko'p rasm)</p><input type="file" multiple accept="image/*" onChange={(e) => setGallery(Array.from(e.target.files))} className="text-xs text-gray-500 cursor-pointer" /></div>
-                  <div className="border border-white/10 p-3 rounded-xl bg-black/30"><p className="text-xs text-gray-400 mb-2">PDF Taqdimot</p><input type="file" accept=".pdf" onChange={(e) => setPdfFile(e.target.files[0])} className="text-xs text-gray-500 cursor-pointer" /></div>
+                  
+                  {/* ASOSIY RASM INPUTI (Ko'rinmas hiyla bilan) */}
+                  <div className="relative border-2 border-dashed border-white/20 p-6 rounded-xl text-center bg-black/30 hover:border-blue-500 hover:bg-black/50 transition-all overflow-hidden group">
+                    <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                    <div className="pointer-events-none relative z-0 flex flex-col items-center justify-center">
+                      <span className="text-3xl mb-2 group-hover:scale-110 transition-transform">📥</span>
+                      <p className="text-sm text-gray-300 font-semibold mb-1">Asosiy rasm (Majburiy)</p>
+                      <p className="text-xs text-gray-500">Faylni tashlang yoki ustiga bosing (Ctrl+V ishlaydi)</p>
+                      {image && <p className="text-lime-400 text-xs mt-2 font-bold">Tanlandi: {image.name}</p>}
+                    </div>
+                  </div>
+
+                  {/* GALEREYA INPUTI */}
+                  <div className="relative border-2 border-dashed border-white/20 p-6 rounded-xl text-center bg-black/30 hover:border-blue-500 hover:bg-black/50 transition-all overflow-hidden group">
+                    <input type="file" multiple accept="image/*" onChange={(e) => setGallery(Array.from(e.target.files))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                    <div className="pointer-events-none relative z-0 flex flex-col items-center justify-center">
+                      <span className="text-3xl mb-2 group-hover:scale-110 transition-transform">🖼️</span>
+                      <p className="text-sm text-gray-300 font-semibold mb-1">Galereya (Ko'p rasm)</p>
+                      <p className="text-xs text-gray-500">Rasmlarni shu yerga tashlang yoki ustiga bosing</p>
+                      {gallery.length > 0 && <p className="text-lime-400 text-xs mt-2 font-bold">Tanlandi: {gallery.length} ta rasm</p>}
+                    </div>
+                  </div>
+
+                  {/* PDF INPUTI */}
+                  <div className="relative border-2 border-dashed border-white/20 p-6 rounded-xl text-center bg-black/30 hover:border-blue-500 hover:bg-black/50 transition-all overflow-hidden group">
+                    <input type="file" accept=".pdf" onChange={(e) => setPdfFile(e.target.files[0])} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                    <div className="pointer-events-none relative z-0 flex flex-col items-center justify-center">
+                      <span className="text-3xl mb-2 group-hover:scale-110 transition-transform">📄</span>
+                      <p className="text-sm text-gray-300 font-semibold mb-1">PDF Taqdimot</p>
+                      <p className="text-xs text-gray-500">PDF faylni tashlang yoki ustiga bosing</p>
+                      {pdfFile && <p className="text-lime-400 text-xs mt-2 font-bold">Tanlandi: {pdfFile.name}</p>}
+                    </div>
+                  </div>
+
                   <button type="submit" disabled={loading} className={`mt-2 py-4 rounded-xl font-bold text-white ${loading ? 'bg-gray-600' : 'bg-gradient-to-r from-blue-600 to-blue-400'}`}>{loading ? "Kuting..." : "Loyihani Saqlash"}</button>
                 </form>
               </>
@@ -233,10 +257,18 @@ export default function AdminDashboard() {
                 <form onSubmit={handlePromptSubmit} className="flex flex-col gap-4">
                   <input type="text" placeholder="Sarlavha (masalan: Kiberpank Qahvaxona)" required value={promptTitle} onChange={(e) => setPromptTitle(e.target.value)} className="w-full bg-black/50 border border-white/10 p-4 rounded-xl outline-none focus:border-purple-500 text-white" />
                   <textarea placeholder="Haqiqiy Prompt matnini yozing (Copy qilish uchun)..." required rows="6" value={promptText} onChange={(e) => setPromptText(e.target.value)} className="w-full bg-black/50 border border-white/10 p-4 rounded-xl outline-none focus:border-purple-500 resize-none font-mono text-sm text-gray-300"></textarea>
-                  <div className="border-2 border-dashed border-white/20 p-5 rounded-xl text-center bg-black/30 hover:border-purple-500 transition">
-                    <p className="text-xs text-gray-400 mb-2">AI yaratgan rasmni yuklang</p>
-                    <input type="file" accept="image/*" onChange={(e) => setPromptImage(e.target.files[0])} className="text-xs text-gray-500 cursor-pointer" />
+                  
+                  {/* PROMPT RASMI INPUTI */}
+                  <div className="relative border-2 border-dashed border-white/20 p-6 rounded-xl text-center bg-black/30 hover:border-purple-500 hover:bg-black/50 transition-all overflow-hidden group">
+                    <input type="file" accept="image/*" onChange={(e) => setPromptImage(e.target.files[0])} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                    <div className="pointer-events-none relative z-0 flex flex-col items-center justify-center">
+                      <span className="text-3xl mb-2 group-hover:scale-110 transition-transform">🤖</span>
+                      <p className="text-sm text-gray-300 font-semibold mb-1">AI yaratgan rasmni yuklang</p>
+                      <p className="text-xs text-gray-500">Faylni shu yerga tashlang yoki ustiga bosing</p>
+                      {promptImage && <p className="text-lime-400 text-xs mt-2 font-bold">Tanlandi: {promptImage.name}</p>}
+                    </div>
                   </div>
+
                   <button type="submit" disabled={loading} className={`mt-2 py-4 rounded-xl font-bold text-white ${loading ? 'bg-gray-600' : 'bg-gradient-to-r from-purple-600 to-pink-500 hover:scale-[1.02] transition'}`}>{loading ? "Kuting..." : "Promptni Saqlash"}</button>
                 </form>
               </>
