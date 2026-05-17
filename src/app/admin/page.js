@@ -12,8 +12,11 @@ export default function AdminDashboard() {
   const [authLoading, setAuthLoading] = useState(true); 
   const [activeTab, setActiveTab] = useState("projects"); 
 
+  // --- HODISALAR UCHUN STATE ---
+  const [hoveredZone, setHoveredZone] = useState("main"); // Kursor qayerdaligini bilish uchun
+
   // --- LOYIHALAR UCHUN STATE ---
-  const [editingProjectId, setEditingProjectId] = useState(null); // Edit qilinayotgan loyiha ID si
+  const [editingProjectId, setEditingProjectId] = useState(null); 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [link, setLink] = useState("");
@@ -22,7 +25,7 @@ export default function AdminDashboard() {
   const [gallery, setGallery] = useState([]); 
   const [category, setCategory] = useState("Grafik dizayn"); 
   
-  // Eskisini saqlab turish uchun state-lar
+  // Eskisini saqlab turish uchun state-lar (Edit uchun)
   const [existingImageUrl, setExistingImageUrl] = useState(null);
   const [existingPdfUrl, setExistingPdfUrl] = useState(null);
   const [existingGallery, setExistingGallery] = useState([]);
@@ -62,7 +65,7 @@ export default function AdminDashboard() {
           process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
           process.env.NEXT_PUBLIC_APPWRITE_PROJECTS_COLLECTION_ID
         );
-        setProjects(projResponse.documents.reverse()); // Eng yangilari tepada chiqadi
+        setProjects(projResponse.documents.reverse());
 
         const promptResponse = await databases.listDocuments(
           process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
@@ -76,24 +79,32 @@ export default function AdminDashboard() {
     fetchData();
   }, [refresh, authLoading]);
 
-  // CTRL+V PASTE UCHUN HODISA
+  // AQLLI CTRL+V (PASTE) HODISASI
   const handlePaste = (e) => {
     const items = e.clipboardData?.items;
     if (!items) return;
     for (let i = 0; i < items.length; i++) {
       if (items[i].type.indexOf("image") !== -1) {
         const file = items[i].getAsFile();
-        if (activeTab === "projects") {
-          setImage(file);
-        } else {
+        
+        if (activeTab === "prompts") {
           setPromptImage(file);
+          alert("Prompt rasmi nusxalandi!");
+        } else {
+          // Kursor qaysi qutida bo'lsa, o'shanga tushadi
+          if (hoveredZone === "gallery") {
+            setGallery(prev => [...prev, file]); 
+            alert("Rasm Galereyaga qo'shildi! (Yana qo'shishingiz mumkin)");
+          } else {
+            setImage(file);
+            alert("Asosiy rasm nusxalandi!");
+          }
         }
-        alert("Rasm nusxalandi! (Paste ishladi)");
       }
     }
   };
 
-  // FORMALARNI TOZALASH FUNKSIYALARI
+  // FORMALARNI TOZALASH
   const resetProjectForm = () => {
     setEditingProjectId(null); setTitle(""); setDescription(""); setLink(""); 
     setImage(null); setPdfFile(null); setGallery([]); setCategory("Grafik dizayn");
@@ -117,8 +128,8 @@ export default function AdminDashboard() {
     setExistingPdfUrl(item.pdf_url);
     setExistingGallery(item.gallery_urls ? JSON.parse(item.gallery_urls) : []);
     
-    setImage(null); setPdfFile(null); setGallery([]); // Yangi fayl tanlanmagan holat
-    window.scrollTo({ top: 0, behavior: 'smooth' }); // Tepaga silliq chiqish
+    setImage(null); setPdfFile(null); setGallery([]); 
+    window.scrollTo({ top: 0, behavior: 'smooth' }); 
   };
 
   const handleProjectSubmit = async (e) => {
@@ -146,7 +157,7 @@ export default function AdminDashboard() {
           const galUrl = `https://cloud.appwrite.io/v1/storage/buckets/${process.env.NEXT_PUBLIC_APPWRITE_BUCKET_ID}/files/${uploadedGal.$id}/view?project=${process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID}`;
           newUrls.push(galUrl);
         }
-        finalGalleryUrlsArray = newUrls; // Agar yangi rasmlar yuklansa, eskisini o'rnini bosadi
+        finalGalleryUrlsArray = newUrls; 
       }
 
       const payload = { 
@@ -277,8 +288,11 @@ export default function AdminDashboard() {
                   <textarea placeholder="Loyiha haqida batafsil..." required rows="4" value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-black/50 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500 resize-none text-white"></textarea>
                   <input type="text" placeholder="Loyiha havolasi (Link)" value={link} onChange={(e) => setLink(e.target.value)} className="w-full bg-black/50 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500 text-white" />
                   
-                  {/* ASOSIY RASM */}
-                  <div className={`relative border-2 border-dashed ${editingProjectId && !image ? 'border-amber-400/30' : 'border-white/20'} p-6 rounded-xl text-center bg-black/30 hover:border-blue-500 transition-all overflow-hidden group`}>
+                  {/* ASOSIY RASM - onMouseEnter bilan */}
+                  <div 
+                    onMouseEnter={() => setHoveredZone("main")}
+                    className={`relative border-2 border-dashed ${editingProjectId && !image ? 'border-amber-400/30' : 'border-white/20'} p-6 rounded-xl text-center bg-black/30 hover:border-blue-500 transition-all overflow-hidden group`}
+                  >
                     <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
                     <div className="pointer-events-none relative z-0 flex flex-col items-center justify-center">
                       <span className="text-3xl mb-2 group-hover:scale-110 transition-transform">📥</span>
@@ -292,8 +306,11 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
-                  {/* GALEREYA */}
-                  <div className="relative border-2 border-dashed border-white/20 p-6 rounded-xl text-center bg-black/30 hover:border-blue-500 transition-all overflow-hidden group">
+                  {/* GALEREYA - onMouseEnter bilan */}
+                  <div 
+                    onMouseEnter={() => setHoveredZone("gallery")}
+                    className="relative border-2 border-dashed border-white/20 p-6 rounded-xl text-center bg-black/30 hover:border-blue-500 transition-all overflow-hidden group"
+                  >
                     <input type="file" multiple accept="image/*" onChange={(e) => setGallery(Array.from(e.target.files))} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
                     <div className="pointer-events-none relative z-0 flex flex-col items-center justify-center">
                       <span className="text-3xl mb-2 group-hover:scale-110 transition-transform">🖼️</span>
@@ -301,9 +318,9 @@ export default function AdminDashboard() {
                       {editingProjectId && existingGallery.length > 0 && gallery.length === 0 ? (
                          <p className="text-amber-400 text-xs mt-1">Eski {existingGallery.length} ta rasm saqlanadi.</p>
                       ) : (
-                         <p className="text-xs text-gray-500">Rasmlarni shu yerga tashlang</p>
+                         <p className="text-xs text-gray-500">Rasmlarni shu yerga tashlang (Ctrl+V)</p>
                       )}
-                      {gallery.length > 0 && <p className="text-lime-400 text-xs mt-2 font-bold">Yangi: {gallery.length} ta rasm</p>}
+                      {gallery.length > 0 && <p className="text-lime-400 text-xs mt-2 font-bold">Yangi: {gallery.length} ta rasm tayyor!</p>}
                     </div>
                   </div>
 
