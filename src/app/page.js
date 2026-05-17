@@ -14,7 +14,7 @@ export default function Home() {
     "Barchasi", 
     "Brend dizayni", 
     "Qadoqlash", 
-    "Grafik dizayn", 
+    "Infografikalar", 
     "AI Vizuallar", 
     "Avtomatlashtirish", 
     "Web Dasturlash",
@@ -29,7 +29,9 @@ export default function Home() {
           process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
           process.env.NEXT_PUBLIC_APPWRITE_PROJECTS_COLLECTION_ID
         );
-        setProjects(response.documents);
+        // TARTIBLASH: order_num ga qarab eng kattasi birinchi bo'ladi
+        const sorted = response.documents.sort((a, b) => (b.order_num || 0) - (a.order_num || 0));
+        setProjects(sorted);
       } catch (error) {
         console.error(error);
       } finally {
@@ -68,15 +70,12 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#050505] text-white flex flex-col items-center relative overflow-hidden">
-      
-      {/* HEADER */}
       <header className="w-full max-w-6xl flex justify-between items-center py-6 px-6 z-20 relative">
         <div className="font-bold text-2xl tracking-tighter cursor-pointer">
           khurshid<span className="text-lime-400">bey</span>
         </div>
       </header>
 
-      {/* HERO SECTION */}
       <section id="home" className="min-h-screen flex items-center pt-10 relative w-full -mt-20 overflow-hidden bg-[#050505]">
         <div className="absolute right-0 top-0 w-full md:w-[65%] h-full z-0 pointer-events-none">
           <motion.div initial={{ opacity: 0, y: 150 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.5, ease: "easeOut" }} className="w-full h-full relative">
@@ -110,7 +109,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* XIZMATLAR (Ierarxiya bilan) */}
       <section className="w-full max-w-6xl z-10 py-24 px-6 border-t border-white/5">
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold mb-4">Nimalar qila <span className="text-lime-400">olaman?</span></h2>
@@ -118,8 +116,6 @@ export default function Home() {
         </div>
         
         <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-          
-          {/* 1. Grafik Dizayn (VIP Karta) */}
           <div className="bg-gradient-to-br from-lime-500/10 to-emerald-900/20 border border-lime-500/30 p-8 md:p-10 rounded-[2.5rem] hover:border-lime-400 transition-all duration-500 group relative overflow-hidden shadow-[0_0_40px_rgba(163,230,53,0.05)]">
             <div className="absolute top-0 right-0 p-6">
               <span className="bg-lime-500/20 text-lime-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Asosiy Yo'nalish</span>
@@ -129,7 +125,6 @@ export default function Home() {
             <p className="text-gray-400 text-base leading-relaxed">Brend identikasi, qadoqlash (packaging) va ijtimoiy tarmoqlar uchun estetik dizaynlar tayyorlash. Brendingizning vizual tilini yarataman.</p>
           </div>
 
-          {/* 2. AI Content Creation (VIP Karta) */}
           <div className="bg-gradient-to-br from-purple-500/10 to-pink-900/20 border border-purple-500/30 p-8 md:p-10 rounded-[2.5rem] hover:border-purple-400 transition-all duration-500 group relative overflow-hidden shadow-[0_0_40px_rgba(168,85,247,0.05)]">
             <div className="absolute top-0 right-0 p-6">
               <span className="bg-purple-500/20 text-purple-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Asosiy Yo'nalish</span>
@@ -139,24 +134,20 @@ export default function Home() {
             <p className="text-gray-400 text-base leading-relaxed">Noyob Promptlar va sun'iy intellekt orqali yuqori sifatli vizuallar, posterlar va raqamli kontentlar yaratish. Chegarasiz fantaziya.</p>
           </div>
 
-          {/* 3. Avtomatlashtirish (Standard Karta) */}
           <div className="bg-white/5 border border-white/10 p-8 md:p-10 rounded-[2.5rem] hover:border-blue-400/30 transition-all duration-500 group">
             <div className="w-14 h-14 bg-blue-400/10 text-blue-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><Bot size={28} /></div>
             <h3 className="text-xl font-bold mb-3 text-gray-200">Avtomatlashtirish</h3>
             <p className="text-gray-400 text-sm leading-relaxed">Sun'iy intellekt va maxsus botlar orqali raqamli ishlarni tezlashtirish hamda jarayonlarni tizimli avtomatlashtirish.</p>
           </div>
 
-          {/* 4. Developer (Standard Karta) */}
           <div className="bg-white/5 border border-white/10 p-8 md:p-10 rounded-[2.5rem] hover:border-emerald-400/30 transition-all duration-500 group">
             <div className="w-14 h-14 bg-emerald-400/10 text-emerald-400 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><Code size={28} /></div>
             <h3 className="text-xl font-bold mb-3 text-gray-200">Developer</h3>
             <p className="text-gray-400 text-sm leading-relaxed">Tezkor, interaktiv va qulay veb ilovalar hamda arxitekturalar dasturlash (Next.js, React).</p>
           </div>
-
         </div>
       </section>
 
-      {/* PROJECTS SECTION */}
       <section id="projects" className="w-full max-w-6xl z-10 py-24 px-6 border-t border-white/5 relative">
         <h2 className="text-3xl md:text-5xl font-bold mb-10 text-center">Mening <span className="text-lime-400">Loyihalarim</span></h2>
 
@@ -206,13 +197,12 @@ export default function Home() {
         )}
       </section>
 
-      {/* CONTACT */}
       <section id="contact" className="w-full max-w-4xl z-10 py-32 px-6 border-t border-white/5 text-center">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <h2 className="text-3xl md:text-5xl font-bold mb-6">Hamkorlik <span className="text-pink-400">qilamizmi?</span></h2>
           <p className="text-gray-400 text-lg mb-12 max-w-2xl mx-auto leading-relaxed">Keling, loyihangizni birga muhokama qilamiz va uni vizual reallikka aylantiramiz.</p>
           <div className="flex flex-wrap justify-center gap-6">
-            <a href="https://t.me/khurshidbeyDSN" target="_blank" className="group relative inline-flex items-center gap-3 bg-lime-400 px-10 py-5 rounded-2xl font-bold text-black hover:bg-lime-300 hover:scale-105 transition-all shadow-xl shadow-lime-400/20">
+            <a href="https://t.me/khurshidbeyDSN" target="_blank" rel="noreferrer" className="group relative inline-flex items-center gap-3 bg-lime-400 px-10 py-5 rounded-2xl font-bold text-black hover:bg-lime-300 hover:scale-105 transition-all shadow-xl shadow-lime-400/20">
               <Send size={22} className="group-hover:rotate-12 transition-transform text-black" /> Telegram orqali bog'lanish
             </a>
           </div>

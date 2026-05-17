@@ -28,15 +28,12 @@ export default function ProjectDetail({ params }) {
 
         const comms = await databases.listDocuments(
           process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
-          "comments", // DIQQAT: Comments ID ni yozish esdan chiqmasin
+          "comments", 
           [Query.equal("projectId", projectId), Query.orderDesc("$createdAt")]
         );
         setComments(comms.documents);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
+      } catch (error) { console.error(error); } 
+      finally { setLoading(false); }
     };
     fetchProjectAndComments();
   }, [projectId]);
@@ -66,18 +63,15 @@ export default function ProjectDetail({ params }) {
     try {
       const response = await databases.createDocument(
         process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
-        "comments", // DIQQAT: Comments ID ni yozish esdan chiqmasin
+        "comments", 
         "unique()",
         { projectId: projectId, name: newComment.name, text: newComment.text }
       );
       
       setComments([response, ...comments]);
       setNewComment({ name: "", text: "" });
-    } catch (error) {
-      alert("Xato: " + error.message);
-    } finally {
-      setCommentLoading(false);
-    }
+    } catch (error) { alert("Xato: " + error.message); } 
+    finally { setCommentLoading(false); }
   };
 
   if (loading) return <div className="min-h-screen bg-[#050505] flex items-center justify-center text-lime-400 animate-pulse font-bold">Loyiha yuklanmoqda...</div>;
@@ -88,11 +82,17 @@ export default function ProjectDetail({ params }) {
 
   return (
     <main className="min-h-screen bg-[#050505] text-white pt-24 pb-20 px-6 relative overflow-hidden">
+      
+      {/* KAROUSEL UCHUN YASHIRIN STIL (SCROLLBARNI BERKITISH) */}
+      <style jsx>{`
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
+
       <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-lime-600/10 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-4xl mx-auto relative z-10">
         
-        {/* Tepa Qism: Orqaga va Layk */}
         <div className="flex justify-between items-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
             <ArrowLeft size={20} /> Orqaga
@@ -104,23 +104,25 @@ export default function ProjectDetail({ params }) {
           </button>
         </div>
 
-        {/* Asosiy Rasm */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-12">
           <div className="w-full h-[400px] md:h-[500px] rounded-[2rem] overflow-hidden mb-8 border border-white/10 shadow-2xl shadow-lime-500/5">
             <img src={project.image_url} alt={project.title} className="w-full h-full object-cover" />
           </div>
           
-          {/* Kategoriya */}
           <div className="flex items-center gap-4 mb-4">
             <span className="px-4 py-1.5 bg-lime-500/10 border border-lime-500/20 text-lime-400 text-xs font-bold uppercase tracking-wider rounded-lg">
               {project.category || "Boshqa"}
             </span>
+            {project.is_carousel && (
+              <span className="px-4 py-1.5 bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-bold uppercase tracking-wider rounded-lg">
+                Karousel Formati
+              </span>
+            )}
           </div>
 
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-black mb-6 leading-tight">{project.title}</h1>
           <p className="text-gray-300 text-lg md:text-xl leading-relaxed whitespace-pre-wrap">{project.description}</p>
           
-          {/* YANGILANGAN: Chiroyli va katta Havola / PDF tugmalari */}
           {(project.github_link || project.pdf_url) && (
             <div className="flex flex-wrap items-center gap-4 mt-10">
               {project.github_link && (
@@ -137,23 +139,35 @@ export default function ProjectDetail({ params }) {
           )}
         </motion.div>
 
-        {/* PINTEREST USLUBIDAGI GALEREYA (Masonry Layout) */}
+        {/* GALEREYA QISMI */}
         {gallery.length > 0 && (
           <div className="mb-24 pt-10 border-t border-white/5">
             <h2 className="text-3xl font-bold mb-10 text-white flex items-center gap-3">
-              Kengaytirilgan Vizuallar
+              {project.is_carousel ? "Karousel Vizuallar (Surib ko'ring)" : "Kengaytirilgan Vizuallar"}
             </h2>
-            <div className="columns-1 md:columns-2 gap-6 space-y-6">
-              {gallery.map((url, i) => (
-                <div key={i} className="rounded-[1.5rem] overflow-hidden border border-white/10 break-inside-avoid shadow-lg shadow-black/50">
-                  <img src={url} alt={`Gallery image ${i + 1}`} className="w-full h-auto object-contain hover:scale-105 transition-transform duration-700 ease-in-out cursor-zoom-in" />
-                </div>
-              ))}
-            </div>
+
+            {project.is_carousel ? (
+              // KAROUSEL LAYOUT: Uzluksiz gorizontal skrol
+              <div className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar border border-white/10 rounded-[1.5rem] shadow-lg shadow-black/50">
+                {gallery.map((url, i) => (
+                  <div key={i} className="min-w-[90%] md:min-w-[60%] lg:min-w-[50%] snap-center flex-shrink-0 relative group border-r border-white/5 last:border-0">
+                    <img src={url} alt={`Carousel image ${i + 1}`} className="w-full h-auto object-cover pointer-events-none" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              // PINTEREST LAYOUT: Standart grid
+              <div className="columns-1 md:columns-2 gap-6 space-y-6">
+                {gallery.map((url, i) => (
+                  <div key={i} className="rounded-[1.5rem] overflow-hidden border border-white/10 break-inside-avoid shadow-lg shadow-black/50">
+                    <img src={url} alt={`Gallery image ${i + 1}`} className="w-full h-auto object-contain hover:scale-105 transition-transform duration-700 ease-in-out cursor-zoom-in" />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
-        {/* IZOHLAR QISMI */}
         <div className="border-t border-white/10 pt-16">
           <h2 className="text-3xl font-bold mb-10 flex items-center gap-3"><MessageSquare className="text-lime-400"/> Loyiha muhokamasi ({comments.length})</h2>
           
