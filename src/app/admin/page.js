@@ -70,6 +70,18 @@ export default function AdminDashboard() {
   }, [refresh, authLoading]);
 
   // LOYIHA SAQLASH
+  const handlePaste = (e) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf("image") !== -1) {
+        const file = items[i].getAsFile();
+        // DIQQAT: Pastdagi setFile o'rniga o'zingizning rasmni saqlaydigan stateni yozing (masalan, setImage yoki setProjectImage)
+        setFile(file); 
+        alert("Rasm nusxalandi! (Paste ishladi)");
+      }
+    }
+  };
   const handleProjectSubmit = async (e) => {
     e.preventDefault();
     if (!image) return alert("Iltimos, asosiy rasm yuklang!");
@@ -180,7 +192,19 @@ export default function AdminDashboard() {
             {activeTab === "projects" ? (
               <>
                 <h2 className="text-xl font-semibold mb-6 text-blue-400 flex items-center gap-2"><FolderKanban/> Yangi loyiha qo'shish</h2>
-                <form onSubmit={handleProjectSubmit} className="flex flex-col gap-4">
+                <form 
+                  onSubmit={handleProjectSubmit}
+                  onPaste={handlePaste}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                      // Bu yerga ham tepadagi stateni yozasiz (masalan, setFile)
+                      setFile(e.dataTransfer.files[0]);
+                    }
+                  }}
+                  className="flex flex-col gap-4"
+                >
                   <input type="text" placeholder="Loyiha nomi" required value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-black/50 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500 text-white" />
                   
                   <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-black/50 border border-white/10 p-4 rounded-xl outline-none focus:border-blue-500 text-white appearance-none cursor-pointer">
