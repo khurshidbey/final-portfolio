@@ -1,13 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { databases } from "@/lib/appwrite";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft, Sparkles, Heart, Copy, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Sparkles, Copy, X, Check } from "lucide-react";
 
 export default function PromptsPage() {
   const [prompts, setPrompts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
 
   useEffect(() => {
@@ -17,34 +18,14 @@ export default function PromptsPage() {
           process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
           process.env.NEXT_PUBLIC_APPWRITE_PROMPTS_COLLECTION_ID
         );
-        setPrompts(response.documents);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
+        setPrompts(response.documents.reverse());
+      } catch (error) { console.error(error); } 
+      finally { setLoading(false); }
     };
     fetchPrompts();
   }, []);
 
-  const handleLike = async (promptId, currentLikes) => {
-    const isLiked = localStorage.getItem(`liked_prompt_${promptId}`);
-    if (isLiked) return; 
-
-    setPrompts(prompts.map(p => p.$id === promptId ? { ...p, likes: (p.likes || 0) + 1 } : p));
-    localStorage.setItem(`liked_prompt_${promptId}`, "true"); 
-
-    try {
-      await databases.updateDocument(
-        process.env.NEXT_PUBLIC_APPWRITE_DATABASE_ID,
-        process.env.NEXT_PUBLIC_APPWRITE_PROMPTS_COLLECTION_ID,
-        promptId,
-        { likes: (currentLikes || 0) + 1 }
-      );
-    } catch (error) { console.error(error); }
-  };
-
-  const copyToClipboard = (text, id) => {
+  const handleCopy = (id, text) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -55,60 +36,72 @@ export default function PromptsPage() {
       <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
-        <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-12">
-          <ArrowLeft size={20} /> Asosiyga qaytish
-        </Link>
+        <div className="flex justify-between items-center mb-12">
+          <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+            <ArrowLeft size={20} /> Asosiy sahifaga qaytish
+          </Link>
+          <div className="bg-purple-500/10 text-purple-400 px-4 py-2 rounded-full font-bold flex items-center gap-2 border border-purple-500/20">
+            <Sparkles size={18} /> {prompts.length} ta Prompt
+          </div>
+        </div>
 
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full text-purple-400 text-sm font-semibold mb-6">
-            <Sparkles size={16} /> AI Prompt Engineering
-          </div>
-          <h1 className="text-4xl md:text-6xl font-black mb-4">Sehrli <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">So'zlar Kutubxonasi</span></h1>
-          <p className="text-gray-400 max-w-2xl mx-auto">Men yaratgan yuqori sifatli AI vizuallar va ularning orqasida yotgan "Prompt" (buyruq) matnlari. Yoqqanini nusxalab oling!</p>
+          <h1 className="text-4xl md:text-6xl font-black mb-4">AI <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Prompts</span> Galereyasi</h1>
+          <p className="text-gray-400 max-w-2xl mx-auto text-lg">Men yaratgan eng yaxshi vizuallar uchun maxsus yozilgan promptlar. Rasm ustiga bosing va promptni o'zingiz uchun oling.</p>
         </div>
 
         {loading ? (
-          <div className="text-center text-gray-400 animate-pulse">Sehrli so'zlar yuklanmoqda...</div>
+          <div className="text-center text-purple-400 animate-pulse font-bold text-xl">Promptlar yuklanmoqda...</div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-8">
-            {prompts.map((prompt) => {
-              const isLiked = typeof window !== 'undefined' ? localStorage.getItem(`liked_prompt_${prompt.$id}`) : false;
-
-              return (
-                <motion.div key={prompt.$id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden flex flex-col group">
-                  
-                  <div className="h-64 w-full relative overflow-hidden">
-                    {/* LAYK TUGMASI RASM USTIDA */}
-                    <div className="absolute top-4 right-4 z-20 flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-                      <button onClick={() => handleLike(prompt.$id, prompt.likes)} className={`transition-colors ${isLiked ? 'text-pink-500' : 'text-gray-400 hover:text-pink-400'}`}>
-                        <Heart size={18} fill={isLiked ? "currentColor" : "none"} className={isLiked ? "scale-110" : "hover:scale-110 transition-transform"} />
-                      </button>
-                      <span className="text-sm font-semibold">{prompt.likes || 0}</span>
-                    </div>
-
-                    <img src={prompt.image_url} alt={prompt.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                  </div>
-
-                  <div className="p-6 flex flex-col flex-grow bg-black/20">
-                    <h3 className="text-xl font-bold mb-4 text-purple-300">{prompt.title}</h3>
-                    
-                    <div className="relative bg-black/40 border border-white/5 p-4 rounded-xl font-mono text-sm text-gray-300 leading-relaxed mb-4">
-                      {prompt.prompt_text}
-                      <button 
-                        onClick={() => copyToClipboard(prompt.prompt_text, prompt.$id)}
-                        className="absolute top-3 right-3 p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors border border-white/10 text-gray-400 hover:text-white"
-                        title="Nusxa olish"
-                      >
-                        {copiedId === prompt.$id ? <CheckCircle2 size={16} className="text-green-400" /> : <Copy size={16} />}
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
+            {prompts.map((prompt) => (
+              <div 
+                key={prompt.$id} 
+                onClick={() => setSelectedPrompt(prompt)}
+                className="rounded-3xl overflow-hidden border border-white/10 break-inside-avoid shadow-lg shadow-black/50 cursor-pointer group relative"
+              >
+                <img src={prompt.image_url} alt={prompt.title} className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
+                  <h3 className="font-bold text-lg text-white">{prompt.title}</h3>
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>
+
+      {/* POP-UP MODAL (Darcha) */}
+      <AnimatePresence>
+        {selectedPrompt && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="bg-[#0a0a0a] border border-white/10 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col md:flex-row relative"
+            >
+              <button onClick={() => setSelectedPrompt(null)} className="absolute top-4 right-4 z-20 bg-black/50 p-2 rounded-full text-gray-400 hover:text-white transition-colors">
+                <X size={24} />
+              </button>
+
+              <div className="w-full md:w-1/2 h-64 md:h-auto bg-black flex-shrink-0">
+                <img src={selectedPrompt.image_url} alt={selectedPrompt.title} className="w-full h-full object-cover" />
+              </div>
+              
+              <div className="w-full md:w-1/2 p-8 flex flex-col overflow-y-auto">
+                <h2 className="text-2xl font-bold text-white mb-4">{selectedPrompt.title}</h2>
+                <div className="bg-white/5 border border-white/10 p-4 rounded-xl flex-grow mb-6 relative group">
+                  <p className="text-gray-300 font-mono text-sm leading-relaxed">{selectedPrompt.prompt_text}</p>
+                </div>
+                <button 
+                  onClick={() => handleCopy(selectedPrompt.$id, selectedPrompt.prompt_text)} 
+                  className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${copiedId === selectedPrompt.$id ? 'bg-green-500 text-white' : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:scale-[1.02]'}`}
+                >
+                  {copiedId === selectedPrompt.$id ? <><Check size={20}/> Nusxa olindi!</> : <><Copy size={20}/> Promptni nusxalash</>}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
-} 
+}

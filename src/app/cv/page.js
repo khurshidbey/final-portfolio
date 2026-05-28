@@ -1,147 +1,153 @@
 "use client";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { 
-  ArrowLeft, Download, Briefcase, Sparkles, Terminal, 
-  GraduationCap, Globe, MessageCircle, Mail 
-} from "lucide-react";
+import { ArrowLeft, Download, Mail, Phone, MapPin, Briefcase, GraduationCap, Code, Award, UserCheck } from "lucide-react";
 
 export default function CVPage() {
-  return (
-    <main className="min-h-screen bg-[#050505] text-white pt-24 pb-20 px-6 relative overflow-hidden">
-      <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-lime-600/10 blur-[130px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-[-5%] left-[-5%] w-[400px] h-[400px] bg-emerald-600/5 blur-[100px] rounded-full pointer-events-none" />
+  const handlePrint = () => {
+    window.print();
+  };
 
-      <div className="max-w-5xl mx-auto relative z-10">
+  return (
+    <main className="min-h-screen bg-[#050505] text-white pt-24 pb-20 px-6 print:bg-white print:text-black print:pt-0 print:pb-0">
+      <div className="max-w-4xl mx-auto relative z-10 print:max-w-full print:mx-0">
         
-        <div className="flex justify-between items-center mb-12">
-          <Link href="/" className="group flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
-            <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" /> Asosiy sahifaga qaytish
+        {/* Tepa tugmalar (PDF qilish paytida yashirinadi) */}
+        <div className="flex justify-between items-center mb-10 print:hidden">
+          <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors">
+            <ArrowLeft size={20} /> Asosiy sahifaga qaytish
           </Link>
-          
-          <a href="/khurshidbey_CV.pdf" download className="flex items-center gap-2 bg-lime-400 text-black px-6 py-3 rounded-2xl font-bold hover:bg-lime-300 hover:scale-105 transition-all shadow-lg shadow-lime-400/20">
-            <Download size={20} /> PDF Yuklab olish
-          </a>
+          <button onClick={handlePrint} className="bg-lime-400 text-black px-6 py-3 rounded-full font-bold hover:bg-lime-300 transition-all flex items-center gap-2 shadow-lg shadow-lime-400/20">
+            <Download size={18} /> PDF Yuklab olish
+          </button>
         </div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid md:grid-cols-3 gap-10 items-center mb-20 bg-white/5 border border-white/10 p-8 md:p-12 rounded-[3rem] backdrop-blur-xl">
-          <div className="relative w-48 h-48 md:w-64 md:h-64 mx-auto">
-            <div className="absolute inset-0 bg-lime-400 rounded-[3rem] rotate-6 opacity-20 animate-pulse" />
-            <img src="/me.jpg" alt="khurshidbey" className="w-full h-full object-cover rounded-[3rem] border-2 border-white/10 relative z-10" />
-          </div>
+        {/* ASOSIY CV KARTASI */}
+        <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 md:p-12 print:bg-white print:border-none print:p-0">
           
-          <div className="md:col-span-2 text-center md:text-left">
-            <h1 className="text-5xl md:text-7xl font-black mb-4">khurshid<span className="text-lime-400">bey</span></h1>
-            <h2 className="text-xl md:text-2xl text-lime-400 font-bold mb-6 tracking-wide">Grafik Dizayner, AI Content Creator & Developer</h2>
-            <p className="text-gray-400 text-lg leading-relaxed max-w-2xl">
-              Men dizayn va texnologiya tutashgan nuqtada ishlayman. Sun'iy intellekt va zamonaviy grafik dizayn orqali brendlar uchun estetik, mukammal vizual yechimlarni taqdim etaman.
-            </p>
+          {/* Header qismi */}
+          <div className="flex flex-col md:flex-row gap-8 items-start mb-12 print:flex-row print:gap-8">
+            <div className="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-lime-400 to-emerald-600 rounded-2xl overflow-hidden flex-shrink-0 relative print:border-2 print:border-gray-200">
+              <img src="/me.jpg" alt="Xurshidbek Xoldorjonov" className="w-full h-full object-cover grayscale-[20%]" />
+            </div>
             
-            <div className="flex flex-wrap justify-center md:justify-start gap-4 mt-8">
-               <div className="flex items-center gap-2 text-sm text-gray-300 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                 <Globe size={16} className="text-lime-400" /> O'zbekiston, Toshkent
-               </div>
-               <div className="flex items-center gap-2 text-sm text-gray-300 bg-white/5 px-4 py-2 rounded-xl border border-white/5">
-                 <Mail size={16} className="text-lime-400" /> xurshidbekxoldorjonov3@gmail.com
-               </div>
+            <div className="flex-1">
+              <h1 className="text-4xl md:text-5xl font-black mb-2 print:text-gray-900">Xurshidbek Xoldorjonov</h1>
+              <h2 className="text-xl text-lime-400 font-bold mb-4 print:text-emerald-700">Grafik Dizayner</h2>
+              <p className="text-gray-400 leading-relaxed mb-6 print:text-gray-700 text-sm md:text-base">
+                Men grafik dizayn, brending va qadoqlash sohalarida o'ziga ishonch bilan faoliyat yurituvchi, tez o'rganuvchan va mas'uliyatli mutaxassisman. Loyihalarda ham vizual estetika, ham mijoz talabiga to'la javob beruvchi yechimlarni taqdim etishga intilaman.
+              </p>
+              
+              <div className="flex flex-wrap gap-4 text-sm text-gray-300 print:text-gray-600">
+                <span className="flex items-center gap-2"><MapPin size={16} className="text-lime-400 print:text-emerald-600"/> O'zbekiston, Toshkent</span>
+                <span className="flex items-center gap-2"><Mail size={16} className="text-lime-400 print:text-emerald-600"/> xurshidbekxoldorjonov3@gmail.com</span>
+                <span className="flex items-center gap-2"><Phone size={16} className="text-lime-400 print:text-emerald-600"/> +998 (77) 704-74-49</span>
+                <span className="flex items-center gap-2 text-blue-400 print:text-blue-600 font-semibold">@khurshidbeyDSN</span>
+              </div>
             </div>
           </div>
-        </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-12">
-          
-          <div className="md:col-span-2 space-y-16">
+          <div className="grid md:grid-cols-2 gap-12 print:grid-cols-2">
             
-            <section>
-              <h3 className="text-2xl font-bold mb-8 flex items-center gap-3"><Briefcase className="text-lime-400"/> Ish Tajribasi</h3>
-              <div className="space-y-10 border-l-2 border-white/10 ml-4 pl-8 relative">
+            {/* ISH TAJRIBASI VA TA'LIM */}
+            <div>
+              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 print:text-gray-900 border-b border-white/10 print:border-gray-300 pb-2">
+                <Briefcase className="text-lime-400 print:text-emerald-600"/> Amaliy Ish Tajribasi
+              </h3>
+              <div className="space-y-6 mb-10">
                 
-                <div className="relative">
-                  <div className="absolute -left-[35px] top-1 w-4 h-4 bg-lime-400 rounded-full border-4 border-[#050505] shadow-[0_0_15px_#a3e635]"></div>
-                  <h4 className="text-xl font-bold">Graphic Designer & AI Content Creator</h4>
-                  <p className="text-lime-400/80 text-sm font-semibold mb-3">Freelance (Onlayn faoliyat) | 2023 - Hozir</p>
-                  <ul className="text-gray-400 text-sm space-y-2 list-disc list-inside">
-                    <li>Turli onlayn loyihalarda grafik dizayn va AI vizuallar tayyorlash.</li>
-                    <li>Brendlar uchun qadoqlash (packaging), logotip va vizual identika yaratish.</li>
-                    <li>Ijtimoiy tarmoqlar uchun zamonaviy dizaynlar va AI orqali generatsiya qilingan vizuallar.</li>
-                  </ul>
+                <div className="relative pl-6 border-l border-lime-400/30 print:border-emerald-600/50">
+                  <div className="absolute w-3 h-3 bg-lime-400 print:bg-emerald-600 rounded-full -left-[6.5px] top-2"></div>
+                  <h4 className="font-bold text-lg print:text-gray-800">EduLand (Xususiy maktab)</h4>
+                  <p className="text-sm text-lime-400 print:text-emerald-600 font-medium mb-1">Grafik Dizayner (2025)</p>
+                  <p className="text-sm text-gray-400 print:text-gray-600">Ta'lim muassasasi uchun turli xil vizual materiallar tayyorlash.</p>
                 </div>
 
-                <div className="relative">
-                  <div className="absolute -left-[35px] top-1 w-4 h-4 bg-white/20 rounded-full border-4 border-[#050505]"></div>
-                  <h4 className="text-xl font-bold">Developer</h4>
-                  <p className="text-gray-500 text-sm font-semibold mb-3">Loyiha asosida | 2024 - Hozir</p>
-                  <ul className="text-gray-400 text-sm space-y-2 list-disc list-inside">
-                    <li>Zamonaviy web ilovalar va interaktiv saytlar qurish.</li>
-                    <li>Avtomatlashtirilgan tizimlar va Telegram botlar dasturlash.</li>
-                  </ul>
+                <div className="relative pl-6 border-l border-lime-400/30 print:border-emerald-600/50">
+                  <div className="absolute w-3 h-3 bg-white/20 print:bg-gray-400 rounded-full -left-[6.5px] top-2"></div>
+                  <h4 className="font-bold text-lg print:text-gray-800">Shoha.tour & Par Fu Dor</h4>
+                  <p className="text-sm text-lime-400 print:text-emerald-600 font-medium mb-1">Brend Dizayner (2025)</p>
+                  <p className="text-sm text-gray-400 print:text-gray-600">Turizm va kosmetika loyihalari uchun noldan brend identikasi yaratish.</p>
                 </div>
 
+                <div className="relative pl-6 border-l border-lime-400/30 print:border-emerald-600/50">
+                  <div className="absolute w-3 h-3 bg-white/20 print:bg-gray-400 rounded-full -left-[6.5px] top-2"></div>
+                  <h4 className="font-bold text-lg print:text-gray-800">Tasnim</h4>
+                  <p className="text-sm text-lime-400 print:text-emerald-600 font-medium mb-1">Qadoqlash Dizayneri (2025)</p>
+                  <p className="text-sm text-gray-400 print:text-gray-600">Sotuv belgisi uchun vizual jozibali qadoqlash (packaging) dizaynlarini ishlab chiqish.</p>
+                </div>
               </div>
-            </section>
 
-            <section>
-              <h3 className="text-2xl font-bold mb-8 flex items-center gap-3"><GraduationCap className="text-lime-400"/> Ta'lim</h3>
-              <div className="bg-white/5 border border-white/10 p-6 rounded-3xl">
-                <h4 className="text-lg font-bold">Najot Ta'lim</h4>
-                <p className="text-gray-400 text-sm mt-1">Grafik Dizayn yo'nalishi | 2025-yil</p>
-                <p className="text-gray-500 text-xs mt-3 italic">"Dizayn va kreativlik — bu mening hayot tarzim."</p>
+              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 print:text-gray-900 border-b border-white/10 print:border-gray-300 pb-2">
+                <GraduationCap className="text-lime-400 print:text-emerald-600"/> Ta'lim
+              </h3>
+              <div className="space-y-4 mb-10">
+                <div className="relative pl-6 border-l border-lime-400/30 print:border-emerald-600/50">
+                  <div className="absolute w-3 h-3 bg-lime-400 print:bg-emerald-600 rounded-full -left-[6.5px] top-2"></div>
+                  <h4 className="font-bold print:text-gray-800">Toshkent Davlat Iqtisodiyot Universiteti</h4>
+                  <p className="text-sm text-gray-400 print:text-gray-600">Talaba (2025 - hozirgi vaqtgacha)</p>
+                </div>
+                <div className="relative pl-6 border-l border-lime-400/30 print:border-emerald-600/50">
+                  <div className="absolute w-3 h-3 bg-white/20 print:bg-gray-400 rounded-full -left-[6.5px] top-2"></div>
+                  <h4 className="font-bold print:text-gray-800">Farg'ona Davlat Texnika Universiteti</h4>
+                  <p className="text-sm text-gray-400 print:text-gray-600">1-bosqich talabasi (2024-2025)</p>
+                </div>
               </div>
-            </section>
+            </div>
 
-          </div>
-
-          <div className="space-y-12">
-            
-            {/* TEXNIK BAZA SECTION */}
-            <section>
-              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 text-lime-400"><Terminal size={24}/> Texnik Baza</h3>
-              <div className="flex flex-wrap gap-2">
-                {['Adobe Photoshop', 'Adobe Illustrator', 'Canva', 'Next.js', 'React', 'Tailwind CSS', 'Python', 'Appwrite', 'Git/GitHub'].map(skill => {
-                  // Asosiy qurollarni tekshiramiz
-                  const isCoreSkill = skill === 'Adobe Photoshop' || skill === 'Adobe Illustrator';
-                  
-                  return (
-                    <span 
-                      key={skill} 
-                      className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-medium transition-all duration-300 ${
-                        isCoreSkill 
-                          ? 'bg-lime-500/10 border border-lime-500/30 text-lime-400 shadow-[0_0_10px_rgba(163,230,53,0.15)] scale-[1.02]' 
-                          : 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10'
-                      }`}
-                    >
-                      {/* Agar asosiy qurol bo'lsa mitti puls uruvchi nuqta qo'shamiz */}
-                      {isCoreSkill && <span className="w-1.5 h-1.5 rounded-full bg-lime-400 animate-pulse" />}
-                      {skill}
-                    </span>
-                  );
-                })}
+            {/* TEXNIK BAZA VA SIFATLAR */}
+            <div>
+              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 print:text-gray-900 border-b border-white/10 print:border-gray-300 pb-2">
+                <Code className="text-lime-400 print:text-emerald-600"/> Dasturiy Bilimlar
+              </h3>
+              
+              <div className="mb-10 space-y-4">
+                <div>
+                  <div className="flex justify-between text-sm mb-1"><span className="text-gray-300 print:text-gray-800 font-semibold">Adobe Photoshop</span><span className="text-lime-400 font-bold">9/10</span></div>
+                  <div className="w-full bg-white/10 print:bg-gray-200 rounded-full h-2"><div className="bg-lime-400 print:bg-emerald-500 h-2 rounded-full w-[90%]"></div></div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-1"><span className="text-gray-300 print:text-gray-800 font-semibold">Adobe Illustrator</span><span className="text-lime-400 font-bold">9/10</span></div>
+                  <div className="w-full bg-white/10 print:bg-gray-200 rounded-full h-2"><div className="bg-lime-400 print:bg-emerald-500 h-2 rounded-full w-[90%]"></div></div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-1"><span className="text-gray-300 print:text-gray-800 font-semibold">Figma</span><span className="text-lime-400 font-bold">8/10</span></div>
+                  <div className="w-full bg-white/10 print:bg-gray-200 rounded-full h-2"><div className="bg-lime-400 print:bg-emerald-500 h-2 rounded-full w-[80%]"></div></div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-sm mb-1"><span className="text-gray-300 print:text-gray-800 font-semibold">CorelDRAW</span><span className="text-lime-400 font-bold">5/10</span></div>
+                  <div className="w-full bg-white/10 print:bg-gray-200 rounded-full h-2"><div className="bg-lime-400 print:bg-emerald-500 h-2 rounded-full w-[50%]"></div></div>
+                </div>
               </div>
-            </section>
 
-            <section>
-              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 text-purple-400"><Sparkles size={24}/> AI Ekspertiza</h3>
-              <div className="flex flex-wrap gap-2">
-                {['Prompt Engineering', 'AI Video Gen', 'Google Gemini', 'ChatGPT', 'AI Automatization'].map(skill => (
-                  <span key={skill} className="bg-purple-500/10 border border-purple-500/20 px-3 py-1.5 rounded-xl text-xs font-medium text-purple-300">
-                    {skill}
-                  </span>
+              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 print:text-gray-900 border-b border-white/10 print:border-gray-300 pb-2">
+                <Award className="text-lime-400 print:text-emerald-600"/> Shaxsiy Sifatlar & Tillar
+              </h3>
+              <div className="mb-6 flex flex-wrap gap-2">
+                {["O'ziga ishonch", "Tez o'rganuvchan", "Ma'suliyatli", "Chiqishuvchan"].map(skill => (
+                  <span key={skill} className="px-3 py-1 bg-white/5 print:bg-gray-100 print:text-gray-800 border border-white/10 print:border-gray-300 rounded-lg text-sm">{skill}</span>
                 ))}
               </div>
-            </section>
+              
+              <div className="grid grid-cols-2 gap-4 text-sm text-gray-300 print:text-gray-800 mb-10">
+                <div className="flex justify-between border-b border-white/5 print:border-gray-300 pb-1"><span>O'zbek:</span> <span className="font-bold text-white print:text-black">9/10</span></div>
+                <div className="flex justify-between border-b border-white/5 print:border-gray-300 pb-1"><span>Tojik:</span> <span className="font-bold text-white print:text-black">9/10</span></div>
+                <div className="flex justify-between border-b border-white/5 print:border-gray-300 pb-1"><span>Ingliz:</span> <span className="font-bold text-white print:text-black">8/10</span></div>
+                <div className="flex justify-between border-b border-white/5 print:border-gray-300 pb-1"><span>Rus:</span> <span className="font-bold text-white print:text-black">3/10</span></div>
+              </div>
 
-            <section className="bg-white/5 border border-white/10 p-8 rounded-[2.5rem] text-center shadow-2xl relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-br from-lime-400/10 to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <h3 className="text-2xl font-black mb-4 relative z-10 text-white">Bog'lanish</h3>
-              <p className="text-sm font-medium mb-6 text-gray-400 relative z-10">Yangi loyihalar va hamkorlik uchun men doim ochiqman!</p>
-              <a href="https://t.me/khurshidbeyDSN" target="_blank" className="relative z-10 flex items-center justify-center gap-3 bg-gradient-to-r from-[#2AABEE] to-[#229ED9] text-white py-4 px-6 rounded-2xl font-bold hover:scale-105 transition-transform shadow-lg shadow-[#2AABEE]/30">
-                <MessageCircle size={24} /> @khurshidbeyDSN
-              </a>
-            </section>
+              <h3 className="text-2xl font-bold mb-4 flex items-center gap-3 print:text-gray-900 border-b border-white/10 print:border-gray-300 pb-2">
+                <UserCheck className="text-lime-400 print:text-emerald-600"/> Soha bo'yicha ustozlar
+              </h3>
+              <ul className="space-y-2 text-gray-400 print:text-gray-700 text-sm">
+                <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-lime-400 print:bg-emerald-600 rounded-full"></div> <b>Davron Rahmonov</b> — "Najot Ta'lim" da Grafik dizayner mentori</li>
+                <li className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-lime-400 print:bg-emerald-600 rounded-full"></div> <b>Maqsadjon Olimjanov</b> — "Najot Ta'lim" da Grafik dizayner mentori</li>
+              </ul>
 
+            </div>
           </div>
+          
         </div>
-
       </div>
     </main>
   );

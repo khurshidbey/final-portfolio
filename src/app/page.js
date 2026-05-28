@@ -95,7 +95,7 @@ export default function Home() {
               </span>
             </motion.div>
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }} className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 leading-tight drop-shadow-2xl">
-              Vizuallar <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-400">Mukammalligi</span>
+             Xurshidbek <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-400 to-emerald-400">Xoldorjonov</span>
             </motion.h1>
             <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.4 }} className="text-gray-300 text-lg md:text-xl max-w-lg mb-10 leading-relaxed font-medium drop-shadow-md bg-[#050505]/40 p-2 rounded-xl backdrop-blur-sm border border-white/5">
               Brendingizga moslashtirilgan vizual dizaynlar va sun'iy intellekt orqali raqamli loyihalaringizni yangi bosqichga olib chiqaman.
